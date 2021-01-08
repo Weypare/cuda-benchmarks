@@ -40,4 +40,6 @@ namespace cuda::blas
     result<double> dot_no_handle(std::size_t n, const double *a, const double *b);
 
     result<double> dot(cublasHandle_t handle, std::size_t n, const double *a, const double *b);
+
+    result<void> add(cublasHandle_t handle, std::size_t n, double *a, const double *b);
 } // namespace cuda::blas
