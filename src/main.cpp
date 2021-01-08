@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <vector>
 
 #include <benchmark/benchmark.h>
 
@@ -17,8 +18,13 @@ static void BM_CuBLAS_ScalarProductNoHandle(benchmark::State &state)
     auto &a_ptr = a.value();
     auto &b_ptr = b.value();
 
-    cuda::memset<double>(a_ptr, 2.0, n);
-    cuda::memset<double>(b_ptr, 2.0, n);
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
 
     for (auto _ : state) {
         auto result = cuda::blas::dot_no_handle(n, a_ptr, b_ptr);
@@ -42,8 +48,13 @@ static void BM_CuBLAS_ScalarProduct(benchmark::State &state)
     auto &a_ptr = a.value();
     auto &b_ptr = b.value();
 
-    cuda::memset<double>(a_ptr, 2.0, n);
-    cuda::memset<double>(b_ptr, 2.0, n);
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
 
     auto handle_result = cuda::blas::cublas_handle::create();
     if (!handle_result) {
@@ -73,8 +84,13 @@ static void BM_CuBLAS_Add(benchmark::State &state)
     auto &a_ptr = a.value();
     auto &b_ptr = b.value();
 
-    cuda::memset<double>(a_ptr, 2.0, n);
-    cuda::memset<double>(b_ptr, 2.0, n);
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
 
     auto handle_result = cuda::blas::cublas_handle::create();
     if (!handle_result) {
@@ -106,8 +122,13 @@ static void BM_CuBLAS_MatrixAdd(benchmark::State &state)
     auto &b_ptr = b.value();
     auto &c_ptr = c.value();
 
-    cuda::memset<double>(a_ptr, 2.0, n * n);
-    cuda::memset<double>(b_ptr, 2.0, n * n);
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
 
     auto handle_result = cuda::blas::cublas_handle::create();
     if (!handle_result) {
@@ -139,8 +160,13 @@ static void BM_CuBLAS_MatrixMultiply(benchmark::State &state)
     auto &b_ptr = b.value();
     auto &c_ptr = c.value();
 
-    cuda::memset<double>(a_ptr, 2.0, n * n);
-    cuda::memset<double>(b_ptr, 2.0, n * n);
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
 
     auto handle_result = cuda::blas::cublas_handle::create();
     if (!handle_result) {
