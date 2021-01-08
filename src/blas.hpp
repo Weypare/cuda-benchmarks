@@ -45,4 +45,7 @@ namespace cuda::blas
 
     result<void>
     matrix_add(cublasHandle_t handle, std::size_t m, std::size_t n, const double *A, const double *B, double *C);
+
+    result<void>
+    matrix_multiply(cublasHandle_t handle, std::size_t m, std::size_t n, const double *A, const double *B, double *C);
 } // namespace cuda::blas
