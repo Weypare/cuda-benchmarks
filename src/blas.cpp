@@ -15,4 +15,13 @@ namespace cuda::blas
             return status;
         return result;
     }
+
+    result<double> dot(cublasHandle_t handle, std::size_t n, const double *a, const double *b)
+    {
+        double result;
+        auto status = cublasDdot(handle, n, a, 1, b, 1, &result);
+        if (status != CUBLAS_STATUS_SUCCESS)
+            return status;
+        return result;
+    }
 } // namespace cuda::blas
