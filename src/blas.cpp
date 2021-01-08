@@ -33,4 +33,14 @@ namespace cuda::blas
             return tl::make_unexpected(status);
         return {};
     }
+
+    result<void>
+    matrix_add(cublasHandle_t handle, std::size_t m, std::size_t n, const double *A, const double *B, double *C)
+    {
+        double alpha = 1;
+        auto status = cublasDgeam(handle, CUBLAS_OP_N, CUBLAS_OP_N, m, n, &alpha, A, m, &alpha, B, m, C, m);
+        if (status != CUBLAS_STATUS_SUCCESS)
+            return tl::make_unexpected(status);
+        return {};
+    }
 } // namespace cuda::blas
