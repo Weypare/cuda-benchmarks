@@ -41,6 +41,15 @@ namespace cuda
         return device_ptr{ptr};
     }
 
+    inline result<void> synchronize()
+    {
+        auto status = cudaDeviceSynchronize();
+        if (status != cudaSuccess) {
+            return tl::make_unexpected(status);
+        }
+        return {};
+    }
+
     enum class memcpy_kind {
         H2H = cudaMemcpyHostToHost,
         H2D = cudaMemcpyHostToDevice,

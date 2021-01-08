@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
 
 project(
     "CUDA Benchmarks"
-    LANGUAGES CXX
+    LANGUAGES CXX CUDA
 )
 
 include(cmake/CPM.cmake)
@@ -30,7 +30,9 @@ add_executable(
     src/common.hpp
     src/blas.cpp
     src/blas.hpp
+    src/custom.cu
+    src/custom.hpp
 )
-set_target_properties(bench PROPERTIES CXX_STANDARD 17)
+set_target_properties(bench PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 target_link_libraries(bench benchmark::benchmark CUDA::cudart CUDA::cublas)
 target_include_directories(bench PRIVATE "${expected_SOURCE_DIR}/include")
