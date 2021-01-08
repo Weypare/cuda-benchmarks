@@ -92,4 +92,37 @@ static void BM_CuBLAS_Add(benchmark::State &state)
 }
 BENCHMARK(BM_CuBLAS_Add);
 
+static void BM_CuBLAS_MatrixAdd(benchmark::State &state)
+{
+    constexpr auto n = 100;
+    auto a = cuda::malloc<double>(n * n);
+    auto b = cuda::malloc<double>(n * n);
+    auto c = cuda::malloc<double>(n * n);
+    if (!a || !b || !c) {
+        throw std::runtime_error{"Failed to allocate memory"};
+    }
+
+    auto &a_ptr = a.value();
+    auto &b_ptr = b.value();
+    auto &c_ptr = c.value();
+
+    cuda::memset<double>(a_ptr, 2.0, n * n);
+    cuda::memset<double>(b_ptr, 2.0, n * n);
+
+    auto handle_result = cuda::blas::cublas_handle::create();
+    if (!handle_result) {
+        throw std::runtime_error{"Failed to init cuBlas"};
+    }
+    auto &handle = handle_result.value();
+
+    for (auto _ : state) {
+        auto result = cuda::blas::matrix_add(handle, n, n, a_ptr, b_ptr, c_ptr);
+        if (!result) {
+            throw std::runtime_error{"Failed to calculate matrix sum"};
+        }
+        benchmark::DoNotOptimize(result);
+    }
+}
+BENCHMARK(BM_CuBLAS_MatrixAdd);
+
 BENCHMARK_MAIN();
