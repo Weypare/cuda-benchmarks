@@ -25,6 +25,14 @@ namespace cuda::blas
         return result;
     }
 
+    result<void> scale(cublasHandle_t handle, std::size_t n, double k, double *a)
+    {
+        auto status = cublasDscal(handle, n, &k, a, 1);
+        if (status != CUBLAS_STATUS_SUCCESS)
+            return tl::make_unexpected(status);
+        return {};
+    }
+
     result<void> kapb(cublasHandle_t handle, std::size_t n, double k, const double *a, double *b)
     {
         auto status = cublasDaxpy(handle, n, &k, a, 1, b, 1);

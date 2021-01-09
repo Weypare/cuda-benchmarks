@@ -43,6 +43,8 @@ namespace cuda::blas
 
     result<void> kapb(cublasHandle_t handle, std::size_t n, double k, const double *a, double *b);
 
+    result<void> scale(cublasHandle_t handle, std::size_t n, double k, double *a);
+
     result<void>
     matrix_add(cublasHandle_t handle, std::size_t m, std::size_t n, const double *A, const double *B, double *C);
 
