@@ -26,6 +26,18 @@ namespace cuda::custom
             }
         }
 
+        template <class Functor>
+        __global__ void zip_with(std::size_t n, const double *a, const double *b, double *c)
+        {
+            std::size_t idx = threadIdx.x + blockDim.x * blockIdx.x;
+            std::size_t stride = blockDim.x * gridDim.x;
+            const auto functor = Functor{};
+
+            for (; idx < n; idx += stride) {
+                c[idx] = functor(a[idx], b[idx]);
+            }
+        }
+
         __global__ void dot(std::size_t n, const double *a, const double *b, double *buf)
         {
             std::size_t tid = threadIdx.x + blockDim.x * blockIdx.x;
