@@ -6,6 +6,15 @@ namespace cuda::custom
 
     namespace kernel
     {
+        __global__ void add(std::size_t n, const double *a, const double *b, double *c)
+        {
+            std::size_t thread_id = threadIdx.x + blockDim.x * blockIdx.x;
+            std::size_t stride = blockDim.x * gridDim.x;
+
+            for (std::size_t idx = thread_id; idx < n; idx += stride) {
+                c[idx] = a[idx] + b[idx];
+            }
+        }
         __global__ void dot(std::size_t n, const double *a, const double *b, double *buf)
         {
             std::size_t tid = threadIdx.x + blockDim.x * blockIdx.x;
@@ -56,5 +65,15 @@ namespace cuda::custom
         }
 
         return result;
+    }
+
+    result<void> add(std::size_t n, const double *a, const double *b, double *c)
+    {
+        const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
+        kernel::add<<<blocks, THREADS_PER_BLOCK>>>(n, a, b, c);
+        if (auto status = cuda::synchronize(); !status) {
+            return status;
+        }
+        return {};
     }
 } // namespace cuda::custom

@@ -12,4 +12,6 @@ namespace cuda::custom
     using result = tl::expected<T, error>;
 
     result<double> dot(std::size_t n, const double *a, const double *b);
+
+    result<void> add(std::size_t n, const double *a, const double *b, double *c);
 } // namespace cuda::custom
