@@ -28,6 +28,16 @@ namespace cuda::custom
             }
         }
 
+        __global__ void scale(std::size_t n, double k, const double *a, double *b)
+        {
+            std::size_t idx = threadIdx.x + blockDim.x * blockIdx.x;
+            std::size_t stride = blockDim.x * gridDim.x;
+
+            for (; idx < n; idx += stride) {
+                b[idx] = k * a[idx];
+            }
+        }
+
         template <class Functor>
         __global__ void zip_with(std::size_t n, const double *a, const double *b, double *c)
         {
@@ -90,6 +100,16 @@ namespace cuda::custom
         }
 
         return result;
+    }
+
+    result<void> scale(std::size_t n, double k, double *a)
+    {
+        const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
+        kernel::scale<<<blocks, THREADS_PER_BLOCK>>>(n, k, a, a);
+        if (auto status = cuda::synchronize(); !status) {
+            return status;
+        }
+        return {};
     }
 
     result<void> add(std::size_t n, const double *a, const double *b, double *c)

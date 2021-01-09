@@ -13,6 +13,8 @@ namespace cuda::custom
 
     result<double> dot(std::size_t n, const double *a, const double *b);
 
+    result<void> scale(std::size_t n, double k, double *a);
+
     result<void> add(std::size_t n, const double *a, const double *b, double *c);
     result<void> add_zip_with(std::size_t n, const double *a, const double *b, double *c);
 
