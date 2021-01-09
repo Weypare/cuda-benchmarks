@@ -38,6 +38,16 @@ namespace cuda::custom
             }
         }
 
+        __global__ void kapb(std::size_t n, double k, const double *a, const double *b, double *c)
+        {
+            std::size_t idx = threadIdx.x + blockDim.x * blockIdx.x;
+            std::size_t stride = blockDim.x * gridDim.x;
+
+            for (; idx < n; idx += stride) {
+                c[idx] = k * a[idx] + b[idx];
+            }
+        }
+
         template <class Functor>
         __global__ void zip_with(std::size_t n, const double *a, const double *b, double *c)
         {
@@ -146,6 +156,16 @@ namespace cuda::custom
         const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
         auto multiply = kernel::zip_with<std::multiplies<double>>;
         multiply<<<blocks, THREADS_PER_BLOCK>>>(n, a, b, c);
+        if (auto status = cuda::synchronize(); !status) {
+            return status;
+        }
+        return {};
+    }
+
+    result<void> kapb(std::size_t n, double k, const double *a, const double *b, double *c)
+    {
+        const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
+        kernel::kapb<<<blocks, THREADS_PER_BLOCK>>>(n, k, a, b, c);
         if (auto status = cuda::synchronize(); !status) {
             return status;
         }
