@@ -1,3 +1,5 @@
+#include <functional>
+
 #include "custom.hpp"
 
 namespace cuda::custom
@@ -99,11 +101,31 @@ namespace cuda::custom
         }
         return {};
     }
+    result<void> add_zip_with(std::size_t n, const double *a, const double *b, double *c)
+    {
+        const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
+        auto add = kernel::zip_with<std::plus<double>>;
+        add<<<blocks, THREADS_PER_BLOCK>>>(n, a, b, c);
+        if (auto status = cuda::synchronize(); !status) {
+            return status;
+        }
+        return {};
+    }
 
     result<void> multiply(std::size_t n, const double *a, const double *b, double *c)
     {
         const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
         kernel::multiply<<<blocks, THREADS_PER_BLOCK>>>(n, a, b, c);
+        if (auto status = cuda::synchronize(); !status) {
+            return status;
+        }
+        return {};
+    }
+    result<void> multiply_zip_with(std::size_t n, const double *a, const double *b, double *c)
+    {
+        const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
+        auto multiply = kernel::zip_with<std::multiplies<double>>;
+        multiply<<<blocks, THREADS_PER_BLOCK>>>(n, a, b, c);
         if (auto status = cuda::synchronize(); !status) {
             return status;
         }
