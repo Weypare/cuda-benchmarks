@@ -73,6 +73,37 @@ static void BM_CuBLAS_ScalarProduct(benchmark::State &state)
 }
 BENCHMARK(BM_CuBLAS_ScalarProduct);
 
+static void BM_CuBLAS_Scale(benchmark::State &state)
+{
+    constexpr auto n = 1000;
+    auto a = cuda::malloc<double>(n);
+    if (!a) {
+        throw std::runtime_error{"Failed to allocate memory"};
+    }
+
+    auto &a_ptr = a.value();
+
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+
+    auto handle_result = cuda::blas::cublas_handle::create();
+    if (!handle_result) {
+        throw std::runtime_error{"Failed to init cuBlas"};
+    }
+    auto &handle = handle_result.value();
+
+    for (auto _ : state) {
+        auto result = cuda::blas::scale(handle, n, 0.5, a_ptr);
+        if (!result) {
+            throw std::runtime_error{"Failed to scale vector"};
+        }
+        benchmark::DoNotOptimize(result);
+    }
+}
+BENCHMARK(BM_CuBLAS_Scale);
+
 static void BM_CuBLAS_Add(benchmark::State &state)
 {
     constexpr auto n = 1000;
