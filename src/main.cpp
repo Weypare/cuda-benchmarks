@@ -247,6 +247,38 @@ static void BM_Custom_Add(benchmark::State &state)
 }
 BENCHMARK(BM_Custom_Add);
 
+static void BM_Custom_AddZipWith(benchmark::State &state)
+{
+    constexpr auto n = 1000;
+    auto a = cuda::malloc<double>(n);
+    auto b = cuda::malloc<double>(n);
+    auto c = cuda::malloc<double>(n);
+    if (!a || !b || !c) {
+        throw std::runtime_error{"Failed to allocate memory"};
+    }
+
+    auto &a_ptr = a.value();
+    auto &b_ptr = b.value();
+    auto &c_ptr = c.value();
+
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+
+    for (auto _ : state) {
+        auto result = cuda::custom::add_zip_with(n, a_ptr, b_ptr, c_ptr);
+        if (!result) {
+            throw std::runtime_error{"Failed to calculate scalar product"};
+        }
+        benchmark::DoNotOptimize(result);
+    }
+}
+BENCHMARK(BM_Custom_AddZipWith);
+
 static void BM_Custom_Multiply(benchmark::State &state)
 {
     constexpr auto n = 1000;
@@ -278,5 +310,37 @@ static void BM_Custom_Multiply(benchmark::State &state)
     }
 }
 BENCHMARK(BM_Custom_Multiply);
+
+static void BM_Custom_MultiplyZipWith(benchmark::State &state)
+{
+    constexpr auto n = 1000;
+    auto a = cuda::malloc<double>(n);
+    auto b = cuda::malloc<double>(n);
+    auto c = cuda::malloc<double>(n);
+    if (!a || !b || !c) {
+        throw std::runtime_error{"Failed to allocate memory"};
+    }
+
+    auto &a_ptr = a.value();
+    auto &b_ptr = b.value();
+    auto &c_ptr = c.value();
+
+    std::vector<double> host(n, 2.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+
+    for (auto _ : state) {
+        auto result = cuda::custom::multiply_zip_with(n, a_ptr, b_ptr, c_ptr);
+        if (!result) {
+            throw std::runtime_error{"Failed to calculate vector multiplication"};
+        }
+        benchmark::DoNotOptimize(result);
+    }
+}
+BENCHMARK(BM_Custom_MultiplyZipWith);
 
 BENCHMARK_MAIN();
