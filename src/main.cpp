@@ -282,6 +282,30 @@ static void BM_Custom_ScalarProduct(benchmark::State &state)
 }
 BENCHMARK(BM_Custom_ScalarProduct);
 
+static void BM_Custom_Scale(benchmark::State &state)
+{
+    constexpr auto n = 1000;
+    auto a = cuda::malloc<double>(n);
+    if (!a) {
+        throw std::runtime_error{"Failed to allocate memory"};
+    }
+
+    auto &a_ptr = a.value();
+
+    std::vector<double> host(n, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), n, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    for (auto _ : state) {
+        auto result = cuda::custom::scale(n, 2.0, a_ptr);
+        if (!result) {
+            throw std::runtime_error{"Failed to scale vector"};
+        }
+        benchmark::DoNotOptimize(result);
+    }
+}
+BENCHMARK(BM_Custom_Scale);
+
 static void BM_Custom_Add(benchmark::State &state)
 {
     constexpr auto n = 1000;
