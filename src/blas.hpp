@@ -41,7 +41,7 @@ namespace cuda::blas
 
     result<double> dot(cublasHandle_t handle, std::size_t n, const double *a, const double *b);
 
-    result<void> add(cublasHandle_t handle, std::size_t n, double *a, const double *b);
+    result<void> kapb(cublasHandle_t handle, std::size_t n, double k, const double *a, double *b);
 
     result<void>
     matrix_add(cublasHandle_t handle, std::size_t m, std::size_t n, const double *A, const double *B, double *C);

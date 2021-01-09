@@ -100,7 +100,7 @@ static void BM_CuBLAS_Add(benchmark::State &state)
     auto &handle = handle_result.value();
 
     for (auto _ : state) {
-        auto result = cuda::blas::add(handle, n, a_ptr, b_ptr);
+        auto result = cuda::blas::kapb(handle, n, 1, a_ptr, b_ptr);
         if (!result) {
             throw std::runtime_error{"Failed to calculate vector sum"};
         }

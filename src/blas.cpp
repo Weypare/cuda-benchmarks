@@ -25,10 +25,9 @@ namespace cuda::blas
         return result;
     }
 
-    result<void> add(cublasHandle_t handle, std::size_t n, double *a, const double *b)
+    result<void> kapb(cublasHandle_t handle, std::size_t n, double k, const double *a, double *b)
     {
-        double alpha = 1;
-        auto status = cublasDaxpy(handle, n, &alpha, b, 1, a, 1);
+        auto status = cublasDaxpy(handle, n, &k, a, 1, b, 1);
         if (status != CUBLAS_STATUS_SUCCESS)
             return tl::make_unexpected(status);
         return {};
