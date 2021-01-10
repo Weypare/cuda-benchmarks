@@ -282,3 +282,32 @@ TEST_CASE("Custom kx + b", "[custom][vector][kxpb]")
     REQUIRE(cuda::memcpy<double>(host.data(), b_ptr, n, cuda::memcpy_kind::D2H));
     REQUIRE_THAT(host, Catch::Matchers::Approx(std::vector<double>(n, 9.0)));
 }
+
+TEST_CASE("Custom Matrix multiplication", "[custom][matrix][multiplication]")
+{
+    constexpr auto n = 100;
+    constexpr auto N = n * n;
+    auto a = cuda::malloc<double>(N);
+    auto b = cuda::malloc<double>(N);
+    REQUIRE(a);
+    REQUIRE(b);
+
+    auto &a_ptr = a.value();
+    auto &b_ptr = b.value();
+
+    std::vector<double> host(N, 2.0);
+    REQUIRE(cuda::memcpy<double>(a_ptr, host.data(), N, cuda::memcpy_kind::H2D));
+
+    host = std::vector<double>(N, 0.0);
+    for (std::size_t i = 0; i < n; i++) {
+        host[i * n + i] = 1.0;
+    }
+
+    REQUIRE(cuda::memcpy<double>(b_ptr, host.data(), N, cuda::memcpy_kind::H2D));
+
+    auto result = cuda::custom::matrix_multiply(n, a_ptr, b_ptr, a_ptr);
+    REQUIRE(result);
+
+    REQUIRE(cuda::memcpy<double>(host.data(), a_ptr, N, cuda::memcpy_kind::D2H));
+    REQUIRE_THAT(host, Catch::Matchers::Approx(std::vector<double>(N, 2.0)));
+}
