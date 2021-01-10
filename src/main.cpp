@@ -466,4 +466,37 @@ static void BM_Custom_Kxpb(benchmark::State &state)
 }
 BENCHMARK(BM_Custom_Kxpb)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
+static void BM_Custom_MatrixMultiply(benchmark::State &state)
+{
+    auto n = state.range(0);
+    auto N = n * n;
+    auto a = cuda::malloc<double>(N);
+    auto b = cuda::malloc<double>(N);
+    auto c = cuda::malloc<double>(N);
+    if (!a || !b || !c) {
+        throw std::runtime_error{"Failed to allocate memory"};
+    }
+
+    auto &a_ptr = a.value();
+    auto &b_ptr = b.value();
+    auto &c_ptr = c.value();
+
+    std::vector<double> host(N, 1.0);
+    if (!cuda::memcpy<double>(a_ptr, host.data(), N, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+    if (!cuda::memcpy<double>(b_ptr, host.data(), N, cuda::memcpy_kind::H2D)) {
+        throw std::runtime_error{"Failed to copy memory"};
+    }
+
+    for (auto _ : state) {
+        auto result = cuda::custom::matrix_multiply(n, a_ptr, b_ptr, c_ptr);
+        if (!result) {
+            throw std::runtime_error{"Failed to calculate caclulca"};
+        }
+        benchmark::DoNotOptimize(result);
+    }
+}
+BENCHMARK(BM_Custom_MatrixMultiply)->RangeMultiplier(2)->Range(1 << 6, 1 << 9);
+
 BENCHMARK_MAIN();
