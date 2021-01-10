@@ -88,6 +88,21 @@ namespace cuda::custom
                 __syncthreads();
             }
         }
+
+        __global__ void matrix_multiply(std::size_t n, const double *A, const double *B, double *C)
+        {
+            int row = blockIdx.y * blockDim.y + threadIdx.y;
+            int col = blockIdx.x * blockDim.x + threadIdx.x;
+
+            if (row < n && col < n) {
+                double sum = 0;
+
+                for (int i = 0; i < n; i++) {
+                    sum += A[row * n + i] * B[i * n + col];
+                }
+                C[row * n + col] = sum;
+            }
+        }
     } // namespace kernel
 
     result<double> dot(std::size_t n, const double *a, const double *b)
@@ -166,6 +181,23 @@ namespace cuda::custom
     {
         const auto blocks = (n + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
         kernel::kapb<<<blocks, THREADS_PER_BLOCK>>>(n, k, a, b, c);
+        if (auto status = cuda::synchronize(); !status) {
+            return status;
+        }
+        return {};
+    }
+
+    result<void> matrix_multiply(std::size_t n, const double *A, const double *B, double *C)
+    {
+        dim3 threads_per_block(n, n);
+        dim3 blocks(1, 1);
+        if (n * n > THREADS_PER_BLOCK) {
+            threads_per_block.x = 16;
+            threads_per_block.y = 16;
+            blocks.x = (n + 15) / 16;
+            blocks.y = (n + 15) / 16;
+        }
+        kernel::matrix_multiply<<<blocks, threads_per_block>>>(n, A, B, C);
         if (auto status = cuda::synchronize(); !status) {
             return status;
         }

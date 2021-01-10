@@ -22,4 +22,6 @@ namespace cuda::custom
     result<void> multiply_zip_with(std::size_t n, const double *a, const double *b, double *c);
 
     result<void> kapb(std::size_t n, double k, const double *a, const double *b, double *c);
+
+    result<void> matrix_multiply(std::size_t n, const double *A, const double *B, double *C);
 } // namespace cuda::custom
