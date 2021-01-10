@@ -41,3 +41,21 @@ add_executable(
 set_target_properties(bench PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
 target_link_libraries(bench benchmark::benchmark CUDA::cudart CUDA::cublas)
 target_include_directories(bench PRIVATE "${expected_SOURCE_DIR}/include")
+
+add_executable(
+    tests
+    src/test.cpp
+    src/utils.hpp
+    src/common.hpp
+    src/blas.cpp
+    src/blas.hpp
+    src/custom.cu
+    src/custom.hpp
+)
+target_link_libraries(tests PRIVATE Catch2::Catch2 CUDA::cudart CUDA::cublas)
+set_target_properties(tests PROPERTIES CXX_STANDARD 17 CXX_EXTENSIONS OFF)
+target_include_directories(tests PRIVATE "${expected_SOURCE_DIR}/include")
+
+include(CTest)
+include("${Catch2_SOURCE_DIR}/contrib/Catch.cmake")
+catch_discover_tests(tests)
