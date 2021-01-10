@@ -22,6 +22,11 @@ CPMAddPackage(
     VERSION 1.0.0
     DOWNLOAD_ONLY TRUE
 )
+CPMFindPackage(
+    NAME Catch2
+    GITHUB_REPOSITORY catchorg/Catch2
+    VERSION 2.13.4
+)
 
 add_executable(
     bench 
