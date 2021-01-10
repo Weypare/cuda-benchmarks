@@ -9,7 +9,7 @@
 
 static void BM_CuBLAS_ScalarProductNoHandle(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     if (!a || !b) {
@@ -35,11 +35,11 @@ static void BM_CuBLAS_ScalarProductNoHandle(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_CuBLAS_ScalarProductNoHandle);
+BENCHMARK(BM_CuBLAS_ScalarProductNoHandle)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_CuBLAS_ScalarProduct(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     if (!a || !b) {
@@ -71,11 +71,11 @@ static void BM_CuBLAS_ScalarProduct(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_CuBLAS_ScalarProduct);
+BENCHMARK(BM_CuBLAS_ScalarProduct)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_CuBLAS_Scale(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     if (!a) {
         throw std::runtime_error{"Failed to allocate memory"};
@@ -102,11 +102,11 @@ static void BM_CuBLAS_Scale(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_CuBLAS_Scale);
+BENCHMARK(BM_CuBLAS_Scale)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_CuBLAS_Add(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     if (!a || !b) {
@@ -138,11 +138,11 @@ static void BM_CuBLAS_Add(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_CuBLAS_Add);
+BENCHMARK(BM_CuBLAS_Add)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_CuBLAS_Kxpb(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     if (!a || !b) {
@@ -174,11 +174,11 @@ static void BM_CuBLAS_Kxpb(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_CuBLAS_Kxpb);
+BENCHMARK(BM_CuBLAS_Kxpb)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_CuBLAS_MatrixAdd(benchmark::State &state)
 {
-    constexpr auto n = 100;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n * n);
     auto b = cuda::malloc<double>(n * n);
     auto c = cuda::malloc<double>(n * n);
@@ -212,11 +212,11 @@ static void BM_CuBLAS_MatrixAdd(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_CuBLAS_MatrixAdd);
+BENCHMARK(BM_CuBLAS_MatrixAdd)->RangeMultiplier(2)->Range(1 << 6, 1 << 9);
 
 static void BM_CuBLAS_MatrixMultiply(benchmark::State &state)
 {
-    constexpr auto n = 100;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n * n);
     auto b = cuda::malloc<double>(n * n);
     auto c = cuda::malloc<double>(n * n);
@@ -250,11 +250,11 @@ static void BM_CuBLAS_MatrixMultiply(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_CuBLAS_MatrixMultiply);
+BENCHMARK(BM_CuBLAS_MatrixMultiply)->RangeMultiplier(2)->Range(1 << 6, 1 << 9);
 
 static void BM_Custom_ScalarProduct(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     if (!a || !b) {
@@ -280,11 +280,11 @@ static void BM_Custom_ScalarProduct(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_Custom_ScalarProduct);
+BENCHMARK(BM_Custom_ScalarProduct)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_Custom_Scale(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     if (!a) {
         throw std::runtime_error{"Failed to allocate memory"};
@@ -304,11 +304,11 @@ static void BM_Custom_Scale(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_Custom_Scale);
+BENCHMARK(BM_Custom_Scale)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_Custom_Add(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     auto c = cuda::malloc<double>(n);
@@ -336,11 +336,11 @@ static void BM_Custom_Add(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_Custom_Add);
+BENCHMARK(BM_Custom_Add)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_Custom_AddZipWith(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     auto c = cuda::malloc<double>(n);
@@ -368,11 +368,11 @@ static void BM_Custom_AddZipWith(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_Custom_AddZipWith);
+BENCHMARK(BM_Custom_AddZipWith)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_Custom_Multiply(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     auto c = cuda::malloc<double>(n);
@@ -400,11 +400,11 @@ static void BM_Custom_Multiply(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_Custom_Multiply);
+BENCHMARK(BM_Custom_Multiply)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_Custom_MultiplyZipWith(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     auto c = cuda::malloc<double>(n);
@@ -432,11 +432,11 @@ static void BM_Custom_MultiplyZipWith(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_Custom_MultiplyZipWith);
+BENCHMARK(BM_Custom_MultiplyZipWith)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 static void BM_Custom_Kxpb(benchmark::State &state)
 {
-    constexpr auto n = 1000;
+    auto n = state.range(0);
     auto a = cuda::malloc<double>(n);
     auto b = cuda::malloc<double>(n);
     auto c = cuda::malloc<double>(n);
@@ -464,6 +464,6 @@ static void BM_Custom_Kxpb(benchmark::State &state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_Custom_Kxpb);
+BENCHMARK(BM_Custom_Kxpb)->RangeMultiplier(2)->Range(1 << 8, 1 << 13);
 
 BENCHMARK_MAIN();
